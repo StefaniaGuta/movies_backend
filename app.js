@@ -26,7 +26,9 @@ const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
 
 const authRouter = require('./routes/auth');
-const listRouter = require('./routes/lists')
+const listRouter = require('./routes/lists');
+const wishRouter = require('./routes/wishList');
+
 app.use(cors());
 app.use(express.json());
 
@@ -44,6 +46,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRouter);
 app.use('/api/list', listRouter);
+app.use('/api/wishList', wishRouter);
 
 
 app.use((req, res) => {

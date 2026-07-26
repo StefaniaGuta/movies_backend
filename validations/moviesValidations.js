@@ -16,8 +16,9 @@ const moviesSchema = Joi.object({
   releaseDate: Joi.string().allow(null, ""),
 
   type: Joi.string()
-    .valid("favorite", "watchlist")
-    .required()
+    .valid("favorite", "watchlist", "watched", "custom")
+    .required(),
+  wishList: Joi.string().allow(null, "")
 });
 
 const validateMovie = (data) => moviesSchema.validate(data, { abortEarly: false });

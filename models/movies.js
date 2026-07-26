@@ -7,6 +7,12 @@ const movieSchema = new mongoose.Schema({
     required: true
   },
 
+  wishList: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Wish',
+    default: null
+  },
+
   movieId: {
     type: Number,
     required: true
@@ -30,7 +36,7 @@ const movieSchema = new mongoose.Schema({
 
   type: {
     type: String,
-    enum: ['favorite', 'watchlist'],
+    enum: ['favorite', 'watchlist', 'watched', 'custom'],
     required: true
   }
 
@@ -40,7 +46,7 @@ const movieSchema = new mongoose.Schema({
 });
 
 movieSchema.index(
-  { owner: 1, movieId: 1, mediaType: 1, type: 1 },
+  { owner: 1, movieId: 1, mediaType: 1, type: 1},
   { unique: true }
 );
 

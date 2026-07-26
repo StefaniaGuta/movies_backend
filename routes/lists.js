@@ -6,33 +6,39 @@ const auth = require('../middlewares/auth');
 
 router.post('/movies', auth, validateMovieRequest, async (req, res) => {
   const owner = req.user._id;
+  const { wishList } = req.body; 
 
   try {
     const newMovie = await Movie.create({
       owner,
-      ...req.body
+      ...req.body,
+      wishList: wishList || null
     });
-    await newMovie.save()
     res.status(201).json(newMovie);
 
   } catch (error) {
-    return res.status(500).json({ message: "Server error." });
+    console.log(error);
+    console.log(wishList)
+    res.status(500).json({ error});
   }
 });
 
 router.get('/movies', auth, async (req, res) => {
   const owner = req.user._id;
-  const { type } = req.query;
+  const { wishList } = req.query;
 
   let filter = { owner };
 
-  if (type) {
-    filter.type = type;
+  if (wishList === 'null') {
+    filter.wishList = null;
+  } else if (wishList) {
+    filter.wishList = wishList;
   }
 
   try {
     const movies = await Movie.find(filter);
     res.status(200).json({ movies });
+
   } catch (error) {
     res.status(500).json({ message: "Server error." });
   }
@@ -64,10 +70,33 @@ router.delete('/movies/:movieId', auth, async (req, res) => {
       });
     }
 
-    res.status(200).json({ message: "Movie deleted successfully." });
+    res.status(200).json({ message: "Movie deleted successfully.", movie });
 
   } catch (error) {
     return res.status(500).json({ message: "Server error." });
+  }
+});
+
+router.patch('/movies/:id/move', auth, async (req, res) => {
+  const owner = req.user._id;
+  const { id } = req.params;
+  const { wishList } = req.body; 
+
+  try {
+    const movie = await Movie.findOneAndUpdate(
+      { _id: id, owner },
+      { wishList: wishList || null },
+      { new: true }
+    );
+
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+
+    res.status(200).json(movie);
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error." });
   }
 });
 
